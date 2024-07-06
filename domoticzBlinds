@@ -10,6 +10,7 @@
  *	4.3	2018-06-21 Removed calibrate, moved it to timed session capability
  * 	4.4 2019-03-16 presetPosition gone as a command for windowshades???? named it in commands
  * 	4.5 2019-03-30 added window shade preset capability
+ * 	4.6 2024-07-06 added position attribute and value to avoid device in HK getting stuck showing 'closing'/'opening' 
  */
 
 preferences {
@@ -21,6 +22,8 @@ metadata {
         capability "Sensor"
         capability "Refresh"
         capability "Window Shade"
+        capability "Switch"
+        capability "Switch Level"
     }
     
         command "open"
@@ -42,6 +45,9 @@ def close() {
 	log.debug "close()"
     if (parent) {
 		sendEvent(name:'windowShade', value:"closed" as String)
+        sendEvent(name:'switch', value:"on" as String)
+        sendEvent(name:'level', value:100 as Number)
+        sendEvent(name:'position', value:0 as Number)
         parent.domoticz_off(getIDXAddress())
     }
 }
@@ -59,6 +65,9 @@ def open() {
 	log.debug "open()"
     if (parent) {
 		sendEvent(name:'windowShade', value:"open" as String)
+        sendEvent(name:'switch', value:"off" as String)
+        sendEvent(name:'level', value:0 as Number)
+        sendEvent(name:'position', value:100 as Number)
         parent.domoticz_on(getIDXAddress())
     }
 }
@@ -69,11 +78,17 @@ def setPosition(pos)
 	{
        log.debug "closed by setPosition"
 	   sendEvent(name:'windowShade', value:"closed" as String)
+       sendEvent(name:'switch', value:"on" as String)
+       sendEvent(name:'level', value:100 as Number)
+       sendEvent(name:'position', value:0 as Number)
        parent.domoticz_off(getIDXAddress())
 	}
 	else
 	{
        sendEvent(name:'windowShade', value:"open" as String)
+       sendEvent(name:'switch', value:"off" as String)
+       sendEvent(name:'level', value:0 as Number)
+       sendEvent(name:'position', value:100 as Number)
 	   parent.domoticz_on(getIDXAddress())
 	}
 }
